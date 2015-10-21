@@ -1,0 +1,81 @@
+Coursera Data Science Specialization - Developing Data Products
+========================================================
+author: phansoks, phansoks@gmail.com
+date: 21/10/2015
+
+Presentation
+========================================================
+
+This apps simulates one of the course project done in the Statistical Inference 
+class about the exponential distribution and the central limit theorem. 
+
+The goal is to shows visually the evolution of a distribution depending on 
+several parameters.
+
+2 plots representing 2 different exponential distribution are displayed in order 
+to compare differents settings.
+
+Inputs
+========================================================
+![alt text](slides-figure/inputs.png)
+***
+We have 2 types of inputs. First type is shared between the two plots, meaning
+that their values are the same in the computation of the distribution. Whereas, 
+Second type (distribution size) is specific to one plot.
+
+The goal is to show that with an increasing distribution size, the sample mean 
+will get closer to the theorical mean.
+
+Outputs 
+========================================================
+Outputs will be 2 density plots, which are automatically refreshed after any
+parameters' modifications.
+
+And the exact value of sample mean for each distribution is also computed.
+
+***
+![alt text](slides-figure/outputs.png)
+
+Demo
+========================================================
+
+
+![alt text](slides-figure/inputs.png)
+***
+```{r, echo=FALSE}
+library(ggplot2)
+df_mean <- function(lambda_i, n_i, simu_i)
+{
+    set.seed(1234)
+    lambda <- lambda_i
+    n <- n_i
+    simu_1 <- simu_i
+    means_1 = NULL
+    
+    # Fill intermediaries results for each distribution
+    for (i in 1 : simu_1) { means_1 = c(means_1, mean(rexp(n,lambda)));}
+    # Create final data frame
+    df <- data.frame(simulation = factor(c(rep(simu_1, simu_1))), 
+                     means = c(means_1))
+    df    
+}
+
+df <- df_mean(0.2, 40, 1000)                
+p <-ggplot(df, aes(x=means)) + 
+        geom_histogram(aes(y=..density..),      # Histogram with density instead of count on y-axis
+                       binwidth=0.2, 
+                       colour="black", fill="white") +
+        geom_density(alpha=.2, fill="#FF6666") +  # Overlay with transparent density plot +                    
+        labs(title = "40 exponentials sample mean distribution, Lambda=0.2") + 
+        ylab("Density") + 
+        xlab("Sample mean")+
+        geom_vline(xintercept=1/0.2,   # Theorical mean
+               color="red", linetype="dashed", size=1, show_guide = T) +
+        geom_vline(xintercept=mean(df$means, na.rm=T),
+               color="blue", linetype="dashed", size=1.2, show_guide = T) +
+        geom_text(x=1/0.2-0.5, label = "Theorical mean", y=0.04, angle=0, color="red") +
+        geom_text(x=1/0.2-0.5, label = "Simulated mean", y=0.015, angle=0, color="blue")
+        
+print(p)
+```
+Link: https://phansoks.shinyapps.io/apps
